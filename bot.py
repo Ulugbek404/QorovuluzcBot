@@ -3,7 +3,8 @@ import logging
 import sys
 
 from aiohttp import web
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, Router
+from aiogram.types import Message
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.default import DefaultBotProperties
@@ -36,12 +37,30 @@ for router in all_routers:
     dp.include_router(router)
 
 
+# Noma'lum xabarlar uchun catch-all handler
+fallback_router = Router()
+
+@fallback_router.message()
+async def fallback_handler(message: Message):
+    """Handle qilinmagan barcha xabarlar"""
+    if message.text and not message.text.startswith("/"):
+        await message.answer(
+            "⚠️ Tushunmadim. Iltimos, menyu tugmalaridan foydalaning.\n\n"
+            "Yoki /start buyrug'ini yuboring.",
+        )
+
+dp.include_router(fallback_router)
+
+
 # ========== WEBHOOK REJIM (Render uchun) ==========
 
 async def on_startup_webhook(app: web.Application):
     """Webhook rejimda bot ishga tushganda"""
     await init_db()
-    await bot.set_webhook(WEBHOOK_URL)
+    await bot.set_webhook(
+        WEBHOOK_URL,
+        drop_pending_updates=True
+    )
     bot_info = await bot.get_me()
     logger.info(f"✅ Bot ishga tushdi (WEBHOOK): @{bot_info.username}")
     logger.info(f"🌐 Webhook URL: {WEBHOOK_URL}")
@@ -49,9 +68,9 @@ async def on_startup_webhook(app: web.Application):
 
 async def on_shutdown_webhook(app: web.Application):
     """Webhook rejimda bot to'xtaganda"""
+    logger.info("🔴 Bot to'xtatildi.")
     await bot.delete_webhook()
     await bot.session.close()
-    logger.info("🔴 Bot to'xtatildi.")
 
 
 async def health_check(request):
@@ -82,6 +101,8 @@ def run_webhook():
 async def on_startup_polling(bot: Bot):
     """Polling rejimda bot ishga tushganda"""
     await init_db()
+    # Webhook ni tozalash (agar avval webhook ishlagan bo'lsa)
+    await bot.delete_webhook(drop_pending_updates=True)
     bot_info = await bot.get_me()
     logger.info(f"✅ Bot ishga tushdi (POLLING): @{bot_info.username}")
     logger.info(f"📛 Bot nomi: {bot_info.first_name}")
@@ -99,7 +120,6 @@ async def run_polling():
     dp.shutdown.register(on_shutdown_polling)
 
     logger.info("🚀 Polling rejimda ishga tushirilmoqda...")
-    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 
