@@ -10,7 +10,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "8674864315:AAH-rJax9RxlvFxGjvUmE0aaG2HQWsllZ
 DATABASE_URL = os.getenv("DATABASE_URL", "database.db")
 
 # Admin Telegram ID lari
-ADMIN_IDS = []
+ADMIN_IDS = [8459647465]
 
 # Xavfsizlik sozlamalari
 MIN_PASSWORD_LENGTH = 6
