@@ -5,6 +5,7 @@ import aiohttp
 import urllib.parse
 from aiogram import Router, F
 from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -184,6 +185,7 @@ async def check_plagiat_real(text: str) -> dict:
 # ========== MATN TEKSHIRISH ==========
 
 @check_router.message(F.text == "🔍 Matn tekshirish")
+@check_router.message(Command("check"))
 async def start_check(message: Message, state: FSMContext):
     """Plagiat tekshiruvini boshlash"""
     user = await get_logged_in_user(message, state)

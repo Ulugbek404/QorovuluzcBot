@@ -2,7 +2,7 @@ import hashlib
 import re
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
@@ -102,6 +102,34 @@ async def cmd_start(message: Message, state: FSMContext):
             reply_markup=get_start_keyboard(),
             parse_mode="HTML"
         )
+
+
+# ========== /HELP ==========
+
+@auth_router.message(Command("help"))
+async def cmd_help(message: Message):
+    """Yordam buyrug'i"""
+    await message.answer(
+        "❓ <b>Yordam — QorovuluzcBot</b>\n\n"
+        "📋 <b>Buyruqlar ro'yxati:</b>\n\n"
+        "/start — 🚀 Botni ishga tushirish\n"
+        "/help — ❓ Yordam va ko'rsatmalar\n"
+        "/check — 🔍 Matnni plagiatga tekshirish\n"
+        "/profile — 👤 Profil ma'lumotlari\n"
+        "/history — 📊 Tekshiruv tarixi\n"
+        "/admin — 🛠 Admin panel\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n\n"
+        "📖 <b>Qanday ishlaydi?</b>\n\n"
+        "1️⃣ /start bosing → Ro'yxatdan o'ting\n"
+        "2️⃣ 🔑 Tizimga kiring\n"
+        "3️⃣ 🔍 \"Matn tekshirish\" ni bosing\n"
+        "4️⃣ Matningizni yuboring\n"
+        "5️⃣ 📊 Natijani oling!\n\n"
+        "🌐 Matn internetdagi manbalar bilan taqqoslanadi.\n"
+        "⏱ Tekshiruv 10-30 soniya davom etadi.\n\n"
+        "💡 <b>Maslahat:</b> Uzunroq matn = aniqroq natija!",
+        parse_mode="HTML"
+    )
 
 
 # ========== RO'YXATDAN O'TISH ==========

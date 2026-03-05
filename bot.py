@@ -6,6 +6,7 @@ from aiohttp import web
 from aiogram import Bot, Dispatcher, Router
 from aiogram.types import Message
 from aiogram.enums import ParseMode
+from aiogram.types import BotCommand
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.default import DefaultBotProperties
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
@@ -54,9 +55,24 @@ dp.include_router(fallback_router)
 
 # ========== WEBHOOK REJIM (Render uchun) ==========
 
+async def set_bot_commands():
+    """Bot menu buyruqlarini o'rnatish"""
+    commands = [
+        BotCommand(command="start", description="🚀 Botni ishga tushirish"),
+        BotCommand(command="help", description="❓ Yordam va ko'rsatmalar"),
+        BotCommand(command="check", description="🔍 Matnni plagiatga tekshirish"),
+        BotCommand(command="profile", description="👤 Profil ma'lumotlari"),
+        BotCommand(command="history", description="📊 Tekshiruv tarixi"),
+        BotCommand(command="admin", description="🛠 Admin panel"),
+    ]
+    await bot.set_my_commands(commands)
+    logger.info("📋 Bot menu buyruqlari o'rnatildi")
+
+
 async def on_startup_webhook(app: web.Application):
     """Webhook rejimda bot ishga tushganda"""
     await init_db()
+    await set_bot_commands()
     await bot.set_webhook(
         WEBHOOK_URL,
         drop_pending_updates=True
@@ -101,6 +117,7 @@ def run_webhook():
 async def on_startup_polling(bot: Bot):
     """Polling rejimda bot ishga tushganda"""
     await init_db()
+    await set_bot_commands()
     # Webhook ni tozalash (agar avval webhook ishlagan bo'lsa)
     await bot.delete_webhook(drop_pending_updates=True)
     bot_info = await bot.get_me()

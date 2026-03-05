@@ -1,5 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from database import get_user_by_telegram_id, get_check_history
@@ -30,6 +31,7 @@ async def get_logged_in_user(message: Message, state: FSMContext) -> dict | None
 # ========== PROFIL ==========
 
 @profile_router.message(F.text == "👤 Profil")
+@profile_router.message(Command("profile"))
 async def show_profile(message: Message, state: FSMContext):
     """Foydalanuvchi profilini ko'rsatish"""
     user = await get_logged_in_user(message, state)
@@ -55,6 +57,7 @@ async def show_profile(message: Message, state: FSMContext):
 # ========== TARIX ==========
 
 @profile_router.message(F.text == "📊 Tarix")
+@profile_router.message(Command("history"))
 async def show_history(message: Message, state: FSMContext):
     """Tekshiruv tarixini ko'rsatish"""
     user = await get_logged_in_user(message, state)
