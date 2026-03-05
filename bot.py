@@ -73,10 +73,7 @@ async def on_startup_webhook(app: web.Application):
     """Webhook rejimda bot ishga tushganda"""
     await init_db()
     await set_bot_commands()
-    await bot.set_webhook(
-        WEBHOOK_URL,
-        drop_pending_updates=True
-    )
+    await bot.set_webhook(WEBHOOK_URL)
     bot_info = await bot.get_me()
     logger.info(f"✅ Bot ishga tushdi (WEBHOOK): @{bot_info.username}")
     logger.info(f"🌐 Webhook URL: {WEBHOOK_URL}")
@@ -84,8 +81,10 @@ async def on_startup_webhook(app: web.Application):
 
 async def on_shutdown_webhook(app: web.Application):
     """Webhook rejimda bot to'xtaganda"""
-    logger.info("🔴 Bot to'xtatildi.")
-    await bot.delete_webhook()
+    logger.info("🔴 Bot to'xtatildi (webhook saqlanadi).")
+    # MUHIM: Webhook O'CHIRILMAYDI!
+    # Render free tier tez-tez restart qiladi.
+    # Webhook saqlanib qolsa, bot qayta ishga tushganda darhol ishlaydi.
     await bot.session.close()
 
 
